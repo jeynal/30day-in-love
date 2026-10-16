@@ -1,5 +1,5 @@
 /* =====================================================================
-   LUMEN : 30 Days in Shanghai  -  main.js  (v2: persistent chat)
+   LUMEN : 30 วันในเซี่ยงไฮ้  -  main.js  (v2: persistent chat)
    ---------------------------------------------------------------------
    แนวคิดหลัก
    1) ทุกข้อความที่แสดงบนจอ ถูกบันทึกลง chatLogs[room] (แยกตามอีเมล)
@@ -24,7 +24,7 @@ let activeRoomId = null;
 let currentNotificationRoomTarget = null;
 
 let waitingForTap = false;
-let speedMode = 1; // 0=Slow, 1=Normal, 2=Fast, 3=Tap
+let speedMode = 1; // 0=ช้า, 1=ปกติ, 2=เร็ว, 3=แตะ
 const delays = [2200, 1200, 500, 0];
 let chatOrderCounter = 100;
 
@@ -41,9 +41,9 @@ function later(fn, ms) {
 // ---------- Persistent state (saved per email) ----------
 const defaultHearts = () => ({ chenxu: 1, xiyao: 0, wenjun: 0, guyan: 0, yingyin: 0, jiangyue: 0, tangmei: 0 });
 const defaultProfile = () => ({
-  name: 'Lin XinYue', avatarDataUrl: '', age: 23, occupation: 'Automation Engineer',
-  interests: 'Reading, writing, music', idealType: 'Good guy, mature',
-  datingStyle: 'Slow burn', bestQuality: 'Friendly'
+  name: 'Lin XinYue', avatarDataUrl: '', age: 23, occupation: 'วิศวกรระบบอัตโนมัติ',
+  interests: 'อ่านหนังสือ, เขียนหนังสือ, ฟังเพลง', idealType: 'คนดี, อบอุ่น, เป็นผู้ใหญ่',
+  datingStyle: 'ค่อยเป็นค่อยไป', bestQuality: 'เป็นมิตร'
 });
 const emptyLogs = () => ({ master: [], group: [], bot: [], heart: [] });
 const defaultProgress = () => ({
@@ -62,57 +62,58 @@ let endingBookRecords = [];
 let chatLogs = emptyLogs();
 let progress = defaultProgress();
 
+// หมายเหตุ: codeName ต้องตรงกับชื่อ sender ใน js/stories/dayN.js (คงเป็นภาษาอังกฤษไว้)
 const contactsData = {
-  chenxu: { codeName: 'Mr. Horizon', realName: 'Chen Xu', age: 29, occupation: 'Lead Architect', avatarUrl: 'images/chenxu.jpg', bgTone: 'bg-purple-200 text-purple-800' },
-  xiyao: { codeName: 'Golden Puppy', realName: 'Xia Xiyao', age: 22, occupation: 'Idol Vocalist & Dancer', avatarUrl: 'images/xiyao.jpg', bgTone: 'bg-sky-200 text-sky-800' },
-  wenjun: { codeName: 'Velvet Noir', realName: 'Wen Jun', age: 28, occupation: 'Art Gallery Owner', avatarUrl: 'images/wenjun.jpg', bgTone: 'bg-indigo-950 text-purple-200' },
-  guyan: { codeName: 'Black Cat', realName: 'Gu Yan', age: 24, occupation: 'Indie Game Developer', avatarUrl: 'images/guyan.jpg', bgTone: 'bg-slate-700 text-slate-200' },
-  yingyin: { codeName: 'Scarlet', realName: 'Song Yingyin', age: 26, occupation: 'Fashion Editor', avatarUrl: 'images/yingyin.jpg', bgTone: 'bg-pink-200 text-pink-800' },
-  jiangyue: { codeName: 'Luna', realName: 'Jiang Yue', age: 25, occupation: 'Classical Pianist', avatarUrl: 'images/jiangyue.jpg', bgTone: 'bg-fuchsia-200 text-fuchsia-800' },
-  tangmei: { codeName: 'Mochi (Foco)', realName: 'Tang Mei', age: 23, occupation: 'Food Vlogger', avatarUrl: 'images/tangmei.jpg', bgTone: 'bg-purple-200 text-purple-800' },
-  master: { codeName: 'Producer', realName: 'Plan Master', occupation: 'Executive Director of LUMEN', avatarUrl: '', bgTone: 'bg-pink-100 text-fuchsia-700', isSpecial: true },
-  bot: { codeName: 'Love Counselor', realName: 'Love Counselor', occupation: 'LUMEN Counselor', avatarUrl: '', bgTone: 'bg-emerald-100 text-emerald-800', isSpecial: true },
-  heartAdmin: { codeName: 'Midnight Heart', realName: 'Midnight Heart', occupation: 'Heart Signal Manager', avatarUrl: '', bgTone: 'bg-pink-100 text-fuchsia-800', isSpecial: true }
+  chenxu: { codeName: 'Mr. Horizon', realName: 'Chen Xu', age: 29, occupation: 'หัวหน้าสถาปนิก', avatarUrl: 'images/chenxu.jpg', bgTone: 'bg-purple-200 text-purple-800' },
+  xiyao: { codeName: 'Golden Puppy', realName: 'Xia Xiyao', age: 22, occupation: 'ไอดอลนักร้องและนักเต้น', avatarUrl: 'images/xiyao.jpg', bgTone: 'bg-sky-200 text-sky-800' },
+  wenjun: { codeName: 'Velvet Noir', realName: 'Wen Jun', age: 28, occupation: 'เจ้าของหอศิลป์', avatarUrl: 'images/wenjun.jpg', bgTone: 'bg-indigo-950 text-purple-200' },
+  guyan: { codeName: 'Black Cat', realName: 'Gu Yan', age: 24, occupation: 'นักพัฒนาเกมอินดี้', avatarUrl: 'images/guyan.jpg', bgTone: 'bg-slate-700 text-slate-200' },
+  yingyin: { codeName: 'Scarlet', realName: 'Song Yingyin', age: 26, occupation: 'บรรณาธิการแฟชั่น', avatarUrl: 'images/yingyin.jpg', bgTone: 'bg-pink-200 text-pink-800' },
+  jiangyue: { codeName: 'Luna', realName: 'Jiang Yue', age: 25, occupation: 'นักเปียโนคลาสสิก', avatarUrl: 'images/jiangyue.jpg', bgTone: 'bg-fuchsia-200 text-fuchsia-800' },
+  tangmei: { codeName: 'Mochi (Foco)', realName: 'Tang Mei', age: 23, occupation: 'ฟู้ดวล็อกเกอร์', avatarUrl: 'images/tangmei.jpg', bgTone: 'bg-purple-200 text-purple-800' },
+  master: { codeName: 'Producer', realName: 'Plan Master', occupation: 'ผู้อำนวยการบริหาร LUMEN', avatarUrl: '', bgTone: 'bg-pink-100 text-fuchsia-700', isSpecial: true },
+  bot: { codeName: 'Love Counselor', realName: 'Love Counselor', occupation: 'ที่ปรึกษา LUMEN', avatarUrl: '', bgTone: 'bg-emerald-100 text-emerald-800', isSpecial: true },
+  heartAdmin: { codeName: 'Midnight Heart', realName: 'Midnight Heart', occupation: 'ผู้จัดการสัญญาณหัวใจ', avatarUrl: '', bgTone: 'bg-pink-100 text-fuchsia-800', isSpecial: true }
 };
 
 const guySecretMessages = {
   chenxu: {
-    day1: "Thanks for the kind write-up",
-    day7: "I hope you are adjusting well to Shanghai's rhythm.",
-    day14: "I kept the small coffee mug you mentioned.",
-    day21: "Looking forward to walking along the Bund with you again.",
-    day28: "My choice has always been you from Day 1."
+    day1: "ขอบคุณสำหรับข้อความดีๆ ที่เขียนถึงกันนะ",
+    day7: "หวังว่าคุณจะปรับตัวเข้ากับจังหวะชีวิตของเซี่ยงไฮ้ได้ดีนะ",
+    day14: "ผมเก็บแก้วกาแฟใบเล็กที่คุณเล่าถึงไว้แล้วนะ",
+    day21: "รอวันที่จะได้เดินเล่นริมแม่น้ำเดอะบันด์กับคุณอีกครั้ง",
+    day28: "ตัวเลือกของผมคือคุณมาตลอดตั้งแต่วันแรก"
   },
   xiyao: {
-    day1: "Glad to meet you! Hope we can talk more ✨",
-    day7: "Your smile in group chat brightened my whole day!",
-    day14: "Let's go eat sweet milk tea together sometime!",
-    day21: "I felt really happy every time you responded to me.",
-    day28: "You are the sweetest part of my 30 days."
+    day1: "ดีใจที่ได้รู้จักนะ! หวังว่าเราจะได้คุยกันอีกเยอะๆ ✨",
+    day7: "รอยยิ้มของคุณในกรุ๊ปแชตทำให้ทั้งวันของผมสดใสเลย!",
+    day14: "ไว้ไปกินชานมหวานๆ ด้วยกันสักวันนะ!",
+    day21: "ผมมีความสุขมากทุกครั้งที่คุณตอบกลับมา",
+    day28: "คุณคือส่วนที่หวานที่สุดของ 30 วันนี้"
   },
   wenjun: {
-    day1: "A gentle night in Shanghai. Glad you joined us.",
-    day7: "Your taste in conversation is intriguing, little one.",
-    day14: "I played a jazz vinyl tonight and thought of your words.",
-    day21: "The gallery feels warm whenever you visit.",
-    day28: "Thank you for making this season unforgettable."
+    day1: "ค่ำคืนที่แสนอ่อนโยนในเซี่ยงไฮ้ ดีใจที่คุณมาร่วมกับเรา",
+    day7: "รสนิยมในการสนทนาของคุณน่าสนใจนะ เจ้าตัวเล็ก",
+    day14: "คืนนี้ผมเปิดแผ่นเสียงแจ๊ส แล้วนึกถึงคำพูดของคุณ",
+    day21: "หอศิลป์อบอุ่นขึ้นทุกครั้งที่คุณมาเยือน",
+    day28: "ขอบคุณที่ทำให้ซีซันนี้เป็นช่วงเวลาที่ไม่มีวันลืม"
   },
   guyan: {
-    day1: "...Thanks for not ignoring my quiet hello.",
-    day7: "I don't usually text much, but I read all your lines.",
-    day14: "Finished my game level. Thought I'd send you a heart.",
-    day21: "My black cat seems to like your picture too.",
-    day28: "You are the only exception to my code."
+    day1: "...ขอบคุณที่ไม่เมินคำทักทายเงียบๆ ของฉัน",
+    day7: "ปกติฉันไม่ค่อยพิมพ์หรอก แต่ฉันอ่านทุกประโยคของเธอนะ",
+    day14: "เล่นด่านเกมเสร็จแล้ว เลยคิดว่าจะส่งหัวใจมาให้เธอ",
+    day21: "แมวดำของฉันดูเหมือนจะชอบรูปของเธอด้วยนะ",
+    day28: "เธอคือข้อยกเว้นเพียงหนึ่งเดียวในโค้ดของฉัน"
   }
 };
 
 const STREAM_ID = { master: 'master-stream', group: 'group-stream', bot: 'bot-stream', heart: 'heart-stream' };
 const PREVIEW_ID = { master: 'master-last-msg', group: 'group-last-msg', bot: 'bot-last-msg', heart: 'heart-last-msg' };
 const PREVIEW_DEFAULT = {
-  master: 'Welcome! Tap to start setup...',
-  group: 'Tap to join group lounge...',
-  bot: 'Hello! Checking in on your status...',
-  heart: 'Activated! Tap to send midnight heart.'
+  master: 'ยินดีต้อนรับ! แตะเพื่อเริ่มตั้งค่า...',
+  group: 'แตะเพื่อเข้าร่วมเลานจ์กลุ่ม...',
+  bot: 'สวัสดี! มาเช็กสถานะของคุณกัน...',
+  heart: 'เปิดใช้งานแล้ว! แตะเพื่อส่งหัวใจเที่ยงคืน'
 };
 
 // =====================================================================
@@ -127,7 +128,7 @@ function saveUserData() {
   try {
     localStorage.setItem(`lumen_save_${userEmail}`, JSON.stringify(storeObj));
   } catch (e) {
-    console.error('Save failed (storage full?)', e);
+    console.error('บันทึกไม่สำเร็จ (พื้นที่เก็บข้อมูลเต็มหรือเปล่า?)', e);
   }
 }
 
@@ -180,7 +181,7 @@ function loadUserData() {
       speedMode = typeof d.speedMode === 'number' ? d.speedMode : 1;
       characterHearts = clone(progress.group.hearts || d.characterHearts || defaultHearts());
     } catch (e) {
-      console.error('Save data parse error:', e);
+      console.error('อ่านข้อมูลที่บันทึกไว้ไม่สำเร็จ:', e);
     }
   }
 
@@ -228,7 +229,7 @@ function submitEmailLogin() {
   if (!inputEl) return;
   const input = inputEl.value.trim();
   if (!input || !input.includes('@')) {
-    alert('Please enter a valid email address!');
+    alert('กรุณากรอกอีเมลให้ถูกต้อง!');
     return;
   }
   const loginModal = $('modal-email-login');
@@ -258,9 +259,9 @@ function openSwitchAccountModal() {
 function updateUIFromState() {
   setTxt('my-player-name', playerProfile.name);
   setTxt('my-player-email', userEmail);
-  setTxt('more-user-email-display', userEmail || 'Not logged in');
-  setTxt('people-player-name', `${playerProfile.name} (You)`);
-  setTxt('people-player-sub', `${playerProfile.occupation} · Participant`);
+  setTxt('more-user-email-display', userEmail || 'ยังไม่ได้เข้าสู่ระบบ');
+  setTxt('people-player-name', `${playerProfile.name} (คุณ)`);
+  setTxt('people-player-sub', `${playerProfile.occupation} · ผู้เข้าร่วม`);
   setTxt('my-day-indicator', `${currentDay} / 30`);
 
   ['people-player-avatar', 'my-player-avatar'].forEach((id) => {
@@ -271,7 +272,7 @@ function updateUIFromState() {
       el.textContent = '';
     } else {
       el.removeAttribute('style');
-      el.textContent = 'You';
+      el.textContent = 'คุณ';
     }
   });
 }
@@ -281,7 +282,7 @@ function applyUnlockState() {
   if (grp) grp.classList.toggle('hidden', !progress.unlocked.group);
   const heart = $('channel-heart');
   if (heart) heart.classList.toggle('hidden', !progress.unlocked.heart);
-  if (progress.masterDone) setTxt('master-last-msg', 'TDL All Group Unlocked!');
+  if (progress.masterDone) setTxt('master-last-msg', 'ปลดล็อก TDL กลุ่มรวมแล้ว!');
 }
 
 function checkWeeklyBotTrigger(notify = false) {
@@ -292,7 +293,7 @@ function checkWeeklyBotTrigger(notify = false) {
     const st = progress.bot[currentDay];
     if (notify && (!st || st.stage === 'new')) {
       moveChannelToTop('bot');
-      triggerInAppNotification('Love Counselor 💬', `Hello ${playerProfile.name}! Checking in on day ${currentDay}...`, '💬', 'bot');
+      triggerInAppNotification('ที่ปรึกษาความรัก 💬', `สวัสดี ${playerProfile.name}! มาเช็กอินวันที่ ${currentDay} กัน...`, '💬', 'bot');
     }
   } else {
     botChannel.classList.add('hidden');
@@ -336,10 +337,10 @@ function rebuildAllStreams() {
 function previewText(e) {
   switch (e.kind) {
     case 'msg': return `${e.sender}: ${e.text}`;
-    case 'img': return `${e.sender}: [Photo 📷]`;
+    case 'img': return `${e.sender}: [รูปภาพ 📷]`;
     case 'master': return e.text;
-    case 'bot': return `Love Counselor: ${e.text}`;
-    case 'admin': return `Heart Manager: ${e.text}`;
+    case 'bot': return `ที่ปรึกษาความรัก: ${e.text}`;
+    case 'admin': return `ผู้จัดการหัวใจ: ${e.text}`;
     default: return '';
   }
 }
@@ -393,7 +394,7 @@ function renderEntry(room, e) {
         <div class="space-y-0.5 max-w-[75%]">
           <span class="text-[11px] font-semibold text-purple-400 ml-1">${e.sender}</span>
           <div class="bg-white border border-purple-100 p-1.5 rounded-2xl rounded-tl-none shadow-sm overflow-hidden">
-            <img src="${e.src}" class="rounded-xl w-full h-auto object-cover max-h-60" alt="Chat attachment" onclick="window.open(this.src, '_blank')">
+            <img src="${e.src}" class="rounded-xl w-full h-auto object-cover max-h-60" alt="รูปที่แนบในแชต" onclick="window.open(this.src, '_blank')">
           </div>
         </div>`;
       break;
@@ -402,7 +403,7 @@ function renderEntry(room, e) {
       wrap.innerHTML = `
         <div class="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-xs text-white shrink-0 mt-0.5 border border-emerald-100 shadow-sm">💬</div>
         <div class="space-y-0.5 max-w-[80%]">
-          <span class="text-[11px] font-semibold text-emerald-600 ml-1">Love Counselor</span>
+          <span class="text-[11px] font-semibold text-emerald-600 ml-1">ที่ปรึกษาความรัก</span>
           <div class="bg-white border border-emerald-100 text-purple-950 px-3.5 py-2 rounded-2xl rounded-tl-none text-xs leading-relaxed shadow-sm">${e.text}</div>
         </div>`;
       break;
@@ -411,7 +412,7 @@ function renderEntry(room, e) {
       wrap.innerHTML = `
         <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-sky-300 to-pink-300 flex items-center justify-center font-bold text-xs text-white shrink-0 mt-0.5 border border-pink-100 shadow-sm">💌</div>
         <div class="space-y-0.5 max-w-[80%]">
-          <span class="text-[11px] font-semibold text-pink-500 ml-1">Heart Manager</span>
+          <span class="text-[11px] font-semibold text-pink-500 ml-1">ผู้จัดการหัวใจ</span>
           <div class="bg-white border border-pink-100 text-purple-950 px-3.5 py-2 rounded-2xl rounded-tl-none text-xs leading-relaxed shadow-sm">${e.text}</div>
         </div>`;
       break;
@@ -428,7 +429,7 @@ function renderEntry(room, e) {
           <div class="text-[9px] text-red-800/80 font-sans tracking-widest font-bold flex justify-between border-b border-red-900/10 pb-1 mb-2 uppercase">
             <span>30 DAYS TO LOVE</span><span>THE AFTERIMAGE PARADOX</span>
           </div>
-          <div class="flex items-center space-x-1.5 text-red-900 font-bold text-sm mb-2"><span>❤️</span><span class="tracking-wide">Heart Message</span></div>
+          <div class="flex items-center space-x-1.5 text-red-900 font-bold text-sm mb-2"><span>❤️</span><span class="tracking-wide">ข้อความจากหัวใจ</span></div>
           <div class="bg-white/90 backdrop-blur-xs p-4 rounded-xl border border-white/60 shadow-inner text-center my-2">
             <p class="text-xs font-semibold text-slate-800 leading-relaxed font-sans">"${e.text}"</p>
           </div>
@@ -556,24 +557,24 @@ function createPolaroidCardHTML(cardData, isPlayer = false, snap = null, day = c
   return `
     <div class="bg-[#f7f5f0] text-purple-950 rounded-xl p-4 shadow-md border border-purple-200/80 max-w-xs mx-auto my-3 font-typewriter">
       <div class="text-[10px] text-purple-400 border-b border-purple-200/60 pb-1.5 mb-2.5 flex justify-between">
-        <span>Day ${day}. Profile : ${esc(nameAge.split(',')[0])}</span>
+        <span>วันที่ ${day}. โปรไฟล์ : ${esc(nameAge.split(',')[0])}</span>
         <span class="tracking-widest font-sans font-bold text-pink-400">30 DAYS TO LOVE</span>
       </div>
       <div class="bg-white p-2.5 rounded-lg border border-purple-100 shadow-sm mb-3">
         <div class="aspect-[4/3] w-full rounded overflow-hidden shadow-inner flex flex-col justify-end p-2 ${noPhoto ? 'bg-purple-200 flex items-center justify-center text-xs font-sans text-purple-700' : ''}" style="${photoStyle}">
-          ${noPhoto ? '📷 Your Photo' : ''}
+          ${noPhoto ? '📷 รูปของคุณ' : ''}
         </div>
         <div class="mt-2 text-[9px] text-purple-400 font-sans tracking-widest flex justify-between uppercase">
           <span>30 DAYS TO LOVE</span><span>THE AFTERIMAGE PARADOX</span>
         </div>
       </div>
       <div class="space-y-2 text-xs text-purple-950 font-sans">
-        <div class="border-b border-purple-200/60 pb-1 flex justify-between"><strong class="font-typewriter text-purple-800">Name/Age:</strong> <span>${esc(nameAge)}</span></div>
-        <div class="border-b border-purple-200/60 pb-1 flex justify-between"><strong class="font-typewriter text-purple-800">Occupation:</strong> <span>${f(src.occupation)}</span></div>
-        <div class="border-b border-purple-200/60 pb-1"><strong class="font-typewriter text-purple-800 block mb-0.5">Interests:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.interests)}</div></div>
-        <div class="border-b border-purple-200/60 pb-1"><strong class="font-typewriter text-purple-800 block mb-0.5">Type:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.idealType)}</div></div>
-        <div class="border-b border-purple-200/60 pb-1"><strong class="font-typewriter text-purple-800 block mb-0.5">Dating Style:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.datingStyle)}</div></div>
-        <div><strong class="font-typewriter text-purple-800 block mb-0.5">Best Quality:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.bestQuality)}</div></div>
+        <div class="border-b border-purple-200/60 pb-1 flex justify-between"><strong class="font-typewriter text-purple-800">ชื่อ/อายุ:</strong> <span>${esc(nameAge)}</span></div>
+        <div class="border-b border-purple-200/60 pb-1 flex justify-between"><strong class="font-typewriter text-purple-800">อาชีพ:</strong> <span>${f(src.occupation)}</span></div>
+        <div class="border-b border-purple-200/60 pb-1"><strong class="font-typewriter text-purple-800 block mb-0.5">ความสนใจ:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.interests)}</div></div>
+        <div class="border-b border-purple-200/60 pb-1"><strong class="font-typewriter text-purple-800 block mb-0.5">สเปก:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.idealType)}</div></div>
+        <div class="border-b border-purple-200/60 pb-1"><strong class="font-typewriter text-purple-800 block mb-0.5">สไตล์การเดต:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.datingStyle)}</div></div>
+        <div><strong class="font-typewriter text-purple-800 block mb-0.5">จุดเด่น:</strong> <div class="bg-purple-100/70 p-1.5 rounded text-[11px]">${f(src.bestQuality)}</div></div>
       </div>
     </div>`;
 }
@@ -584,12 +585,12 @@ function createPolaroidCardHTML(cardData, isPlayer = false, snap = null, day = c
 const masterData = () => (window.day1Data && window.day1Data.masterDialogues) || [];
 
 const regQuestions = [
-  { key: 'name', label: 'Name / Nickname:', placeholder: 'e.g. Lin XinYue' },
-  { key: 'age', label: 'Age:', placeholder: 'e.g. 23' },
-  { key: 'occupation', label: 'Occupation:', placeholder: 'e.g. Automation Engineer' },
-  { key: 'interests', label: 'Interests & Hobbies:', placeholder: 'e.g. Reading, writing' },
-  { key: 'idealType', label: 'Ideal Type:', placeholder: 'e.g. Good guy, mature' },
-  { key: 'datingStyle', label: 'Dating Style:', placeholder: 'e.g. Slow burn' }
+  { key: 'name', label: 'ชื่อ / ชื่อเล่น:', placeholder: 'เช่น Lin XinYue' },
+  { key: 'age', label: 'อายุ:', placeholder: 'เช่น 23' },
+  { key: 'occupation', label: 'อาชีพ:', placeholder: 'เช่น วิศวกรระบบอัตโนมัติ' },
+  { key: 'interests', label: 'ความสนใจและงานอดิเรก:', placeholder: 'เช่น อ่านหนังสือ, เขียนหนังสือ' },
+  { key: 'idealType', label: 'สเปกในฝัน:', placeholder: 'เช่น คนดี, เป็นผู้ใหญ่' },
+  { key: 'datingStyle', label: 'สไตล์การเดต:', placeholder: 'เช่น ค่อยเป็นค่อยไป' }
 ];
 
 function saveMasterCheckpoint(sub) {
@@ -618,7 +619,7 @@ function openMasterChat() {
     masterRunning = true;
     ensureDayData(1, resumeMaster, () => {
       masterRunning = false;
-      showFatalInRoom('master-stream', 'Cannot load js/stories/day1.js — check the file path/name and the browser Console (F12).');
+      showFatalInRoom('master-stream', 'โหลด js/stories/day1.js ไม่ได้ — ตรวจสอบพาธ/ชื่อไฟล์ และดู Console ของเบราว์เซอร์ (F12)');
     });
   }
 }
@@ -635,7 +636,7 @@ function showFatalInRoom(streamId, text) {
 
 window.addEventListener('error', (ev) => {
   const room = activeRoomId ? STREAM_ID[activeRoomId] : null;
-  if (room) showFatalInRoom(room, `Script error: ${ev.message}`);
+  if (room) showFatalInRoom(room, `สคริปต์ผิดพลาด: ${ev.message}`);
 });
 
 function resumeMaster() {
@@ -648,7 +649,7 @@ function resumeMaster() {
 
 function showEnterGroupButton() {
   const box = $('master-form-box');
-  if (box) box.innerHTML = `<button onclick="exitActiveChat(); openGroupChat();" class="w-full bg-gradient-to-r from-fuchsia-400 to-pink-400 text-white font-bold py-2.5 rounded-xl text-xs shadow-md uppercase tracking-wider">Enter TDL All Group Lounge →</button>`;
+  if (box) box.innerHTML = `<button onclick="exitActiveChat(); openGroupChat();" class="w-full bg-gradient-to-r from-fuchsia-400 to-pink-400 text-white font-bold py-2.5 rounded-xl text-xs shadow-md tracking-wider">เข้าเลานจ์ TDL กลุ่มรวม →</button>`;
 }
 
 function processMasterQueue() {
@@ -672,9 +673,9 @@ function processMasterQueue() {
     if (box) {
       box.innerHTML = `
         <div class="space-y-2 text-center p-3 bg-purple-50 rounded-2xl border border-purple-100 shadow-xs">
-          <label class="text-xs font-semibold text-purple-900 block">Upload Profile Avatar (Optional):</label>
+          <label class="text-xs font-semibold text-purple-900 block">อัปโหลดรูปโปรไฟล์ (ไม่บังคับ):</label>
           <input type="file" accept="image/*" onchange="handleMasterAvatarUpload(event)" class="text-xs text-purple-900 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:bg-pink-100 file:text-fuchsia-600">
-          <button onclick="skipMasterAvatarUpload()" class="block mx-auto text-[11px] text-purple-400 underline pt-1">Skip this step →</button>
+          <button onclick="skipMasterAvatarUpload()" class="block mx-auto text-[11px] text-purple-400 underline pt-1">ข้ามขั้นตอนนี้ →</button>
         </div>`;
     }
   } else if (item.type === 'player_reg_flow') {
@@ -692,7 +693,7 @@ function processMasterQueue() {
       progress.master.sub = null;
       applyUnlockState();
       moveChannelToTop('group');
-      triggerInAppNotification('TDL : All Group', 'Lounge Activated! Tap to join.', 'G', 'group');
+      triggerInAppNotification('TDL : กลุ่มรวม', 'เปิดเลานจ์แล้ว! แตะเพื่อเข้าร่วม', 'G', 'group');
       showEnterGroupButton();
       saveUserData();
     }
@@ -711,7 +712,7 @@ function handleMasterAvatarUpload(event) {
     playerProfile.avatarDataUrl = dataUrl;
     updateUIFromState();
     clearMasterBox();
-    pushEntry('master', { kind: 'user', text: '📷 Avatar photo uploaded!' });
+    pushEntry('master', { kind: 'user', text: '📷 อัปโหลดรูปโปรไฟล์แล้ว!' });
     nextMaster(0);
   });
 }
@@ -724,7 +725,7 @@ function startMasterRegQuestions(idx) {
   }
   saveMasterCheckpoint({ mode: 'reg', idx });
   const q = regQuestions[idx];
-  pushEntry('master', { kind: 'master', text: `[Profile Detail ${idx + 1}/6] ${q.label}` });
+  pushEntry('master', { kind: 'master', text: `[ข้อมูลโปรไฟล์ ${idx + 1}/6] ${q.label}` });
   renderMasterInputBar(q.placeholder, (text) => {
     playerProfile[q.key] = text;
     updateUIFromState();
@@ -733,7 +734,7 @@ function startMasterRegQuestions(idx) {
   });
 }
 
-function renderMasterInputBar(placeholder, cb, defaultValue = '', btnLabel = 'Send') {
+function renderMasterInputBar(placeholder, cb, defaultValue = '', btnLabel = 'ส่ง') {
   const box = $('master-form-box');
   if (!box) return;
   box.innerHTML = `
@@ -764,16 +765,16 @@ function showMasterCardConfirmation() {
 
   box.innerHTML = `
     <div class="space-y-2 p-2 bg-purple-50/80 rounded-2xl border border-purple-100">
-      <p class="text-[11px] font-bold text-purple-900 text-center">Is your profile card accurate?</p>
+      <p class="text-[11px] font-bold text-purple-900 text-center">การ์ดโปรไฟล์ของคุณถูกต้องไหม?</p>
       <div class="grid grid-cols-1 gap-1.5">
-        <button id="btn-confirm-card" class="w-full bg-gradient-to-r from-fuchsia-400 to-pink-400 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm hover:opacity-95 active:scale-95 transition">✨ Confirm & Continue</button>
+        <button id="btn-confirm-card" class="w-full bg-gradient-to-r from-fuchsia-400 to-pink-400 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm hover:opacity-95 active:scale-95 transition">✨ ยืนยันและไปต่อ</button>
         <button id="btn-edit-card" class="w-full bg-white border border-purple-200 text-purple-800 font-semibold py-2 rounded-xl text-xs hover:bg-purple-100/50 active:scale-95 transition">✏️ ฉันคิดว่าอยากแก้ข้อมูลใหม่</button>
       </div>
     </div>`;
 
   $('btn-confirm-card').onclick = () => {
     box.innerHTML = '';
-    pushEntry('master', { kind: 'user', text: 'Looks perfect to me!' });
+    pushEntry('master', { kind: 'user', text: 'ดูสมบูรณ์แบบเลยค่ะ!' });
     nextMaster(0);
   };
 
@@ -781,7 +782,7 @@ function showMasterCardConfirmation() {
     box.innerHTML = '';
     pushEntry('master', { kind: 'user', text: 'ฉันคิดว่าอยากแก้ข้อมูลใหม่' });
     later(() => {
-      pushEntry('master', { kind: 'master', text: "No problem! Let's update your details step by step." });
+      pushEntry('master', { kind: 'master', text: 'ไม่มีปัญหาค่ะ! มาปรับข้อมูลของคุณทีละขั้นตอนกันนะคะ' });
       startMasterEditFlow(0);
     }, 600);
   };
@@ -792,21 +793,21 @@ function startMasterEditFlow(idx) {
 
   if (idx >= regQuestions.length) {
     clearMasterBox();
-    pushEntry('master', { kind: 'master', text: 'Here is your updated Profile Card!' });
+    pushEntry('master', { kind: 'master', text: 'นี่คือการ์ดโปรไฟล์ที่อัปเดตแล้วของคุณค่ะ!' });
     pushEntry('master', { kind: 'card', key: 'player', snap: profileSnap() });
-    pushEntry('master', { kind: 'master', text: 'How about now? Does it look perfect?' }, 800);
+    pushEntry('master', { kind: 'master', text: 'ตอนนี้เป็นยังไงบ้างคะ ดูสมบูรณ์แบบไหม?' }, 800);
     later(showMasterCardConfirmation, 800);
     return;
   }
 
   const q = regQuestions[idx];
-  pushEntry('master', { kind: 'master', text: `[Update ${idx + 1}/6] ${q.label}` });
+  pushEntry('master', { kind: 'master', text: `[อัปเดต ${idx + 1}/6] ${q.label}` });
   renderMasterInputBar(q.placeholder, (newValue) => {
     playerProfile[q.key] = newValue;
     updateUIFromState();
     pushEntry('master', { kind: 'user', text: newValue });
     startMasterEditFlow(idx + 1);
-  }, String(playerProfile[q.key] || ''), 'Save');
+  }, String(playerProfile[q.key] || ''), 'บันทึก');
 }
 
 // =====================================================================
@@ -825,7 +826,7 @@ function resetGroupInputBar() {
   const inputText = $('group-input-text');
   const sendBtn = $('group-send-btn');
   if (inputText) {
-    inputText.textContent = 'Please select an option...';
+    inputText.textContent = 'กรุณาเลือกตัวเลือก...';
     inputText.classList.add('text-gray-400');
     inputText.classList.remove('text-gray-800');
   }
@@ -837,14 +838,14 @@ function resetGroupInputBar() {
 
 function setGroupClosedBar() {
   resetGroupInputBar();
-  setTxt('group-input-text', 'Lounge closed for today 🔒');
+  setTxt('group-input-text', 'เลานจ์ปิดแล้วสำหรับวันนี้ 🔒');
   const bar = $('next-tap-bar');
   if (bar) bar.classList.add('hidden');
 }
 
 function openGroupChat() {
   if (!progress.unlocked.group) { openMasterChat(); return; }
-  enterRoomUI('group', 'TDL : All Group');
+  enterRoomUI('group', 'TDL : กลุ่มรวม');
   const dot = $('group-unread-dot');
   if (dot) dot.classList.add('hidden');
 
@@ -854,7 +855,7 @@ function openGroupChat() {
     groupRunning = true;
     ensureDayData(progress.group.day, startGroupFlow, () => {
       groupRunning = false;
-      alert(`Day ${progress.group.day} story file not found (js/stories/day${progress.group.day}.js).`);
+      alert(`ไม่พบไฟล์เนื้อเรื่องวันที่ ${progress.group.day} (js/stories/day${progress.group.day}.js)`);
     });
   }
 }
@@ -862,7 +863,7 @@ function openGroupChat() {
 function startGroupFlow() {
   const g = progress.group;
   if (g.pos === 0 && g.day > 1 && !chatLogs.group.some((e) => e.day === g.day)) {
-    pushEntry('group', { kind: 'sys', text: `— Day ${g.day} —` });
+    pushEntry('group', { kind: 'sys', text: `— วันที่ ${g.day} —` });
   }
   processGroupQueue();
 }
@@ -895,13 +896,13 @@ function processGroupQueue() {
   } else if (item.type === 'msg') {
     showTypingIndicator(item.sender, () => {
       pushEntry('group', { kind: 'msg', sender: item.sender, tone: item.tone, text: item.text });
-      triggerInAppNotification('TDL : All Group', `${item.sender}: ${item.text}`, item.sender[0], 'group');
+      triggerInAppNotification('TDL : กลุ่มรวม', `${item.sender}: ${item.text}`, item.sender[0], 'group');
       afterGroupItem();
     });
   } else if (item.type === 'img') {
     showTypingIndicator(item.sender, () => {
       pushEntry('group', { kind: 'img', sender: item.sender, tone: item.tone, src: item.src });
-      triggerInAppNotification('TDL : All Group', `${item.sender} sent a photo 📷`, item.sender[0], 'group');
+      triggerInAppNotification('TDL : กลุ่มรวม', `${item.sender} ส่งรูปภาพ 📷`, item.sender[0], 'group');
       afterGroupItem();
     });
   } else if (item.type === 'card') {
@@ -914,7 +915,7 @@ function processGroupQueue() {
       progress.unlocked.heart = true;
       applyUnlockState();
       moveChannelToTop('heart');
-      triggerInAppNotification('<Heart Sending>', 'Midnight Heart Signal Activated! 💌', '💌', 'heart');
+      triggerInAppNotification('<ส่งหัวใจ>', 'เปิดสัญญาณหัวใจเที่ยงคืนแล้ว! 💌', '💌', 'heart');
     }
     afterGroupItem();
   } else {
@@ -944,7 +945,7 @@ function showTypingIndicator(sender, cb) {
   if (speedMode === 3) { cb(); return; }
   const indicator = $('typing-indicator');
   if (indicator) indicator.classList.remove('hidden');
-  setTxt('typing-name', `${sender} is typing...`);
+  setTxt('typing-name', `${sender} กำลังพิมพ์...`);
   later(() => {
     if (indicator) indicator.classList.add('hidden');
     cb();
@@ -1027,7 +1028,7 @@ function selectChoiceOption(opt) {
       const guyKey = Object.keys(contactsData).find((k) => base(contactsData[k].codeName) === base(opt.replySender) || contactsData[k].realName === opt.replySender);
       const tone = guyKey ? contactsData[guyKey].bgTone : 'bg-purple-200 text-purple-800';
       pushEntry('group', { kind: 'msg', sender: opt.replySender, tone, text: opt.replyText });
-      triggerInAppNotification('TDL : All Group', `${opt.replySender}: ${opt.replyText}`, opt.replySender[0], 'group');
+      triggerInAppNotification('TDL : กลุ่มรวม', `${opt.replySender}: ${opt.replyText}`, opt.replySender[0], 'group');
       afterGroupItem();
     });
   } else {
@@ -1036,7 +1037,7 @@ function selectChoiceOption(opt) {
 }
 
 // =====================================================================
-// ROOM 3 : BOT (Love Counselor) - ต่อวัน
+// ROOM 3 : BOT (ที่ปรึกษาความรัก) - ต่อวัน
 // =====================================================================
 const guysList = [
   { key: 'chenxu', name: '1. Chen Xu (Mr. Horizon)' },
@@ -1046,7 +1047,7 @@ const guysList = [
 ];
 
 function openConsultantBotChat() {
-  enterRoomUI('bot', 'Love Counselor 💬');
+  enterRoomUI('bot', 'ที่ปรึกษาความรัก 💬');
   const dot = $('bot-unread-dot');
   if (dot) dot.classList.add('hidden');
 
@@ -1055,8 +1056,8 @@ function openConsultantBotChat() {
   if (st.stage === 'new') {
     removeDayEntries('bot', currentDay);
     rebuildRoom('bot');
-    pushEntry('bot', { kind: 'bot', text: `Hello ${esc(playerProfile.name)} 😊 Day ${currentDay} has passed! How are you feeling so far?` });
-    pushEntry('bot', { kind: 'bot', text: 'Would you like to know who in the group is secretly impressed by you? Whose affinity shall I secretly check for you?' }, 1000);
+    pushEntry('bot', { kind: 'bot', text: `สวัสดี ${esc(playerProfile.name)} 😊 ผ่านไปแล้ววันที่ ${currentDay}! ตอนนี้รู้สึกยังไงบ้างคะ?` });
+    pushEntry('bot', { kind: 'bot', text: 'อยากรู้ไหมคะว่าใครในกลุ่มแอบประทับใจคุณอยู่? จะให้ฉันแอบเช็กความสนิทของใครให้ดีคะ?' }, 1000);
     st.stage = 'choose';
     saveUserData();
     later(showBotGuyChoices, 1000);
@@ -1073,7 +1074,7 @@ function showBotGuyChoices() {
   guysList.forEach((guy) => {
     const btn = document.createElement('button');
     btn.className = 'w-full text-left p-2.5 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/80 rounded-xl text-xs text-emerald-950 transition active:scale-[0.99] font-medium shadow-xs';
-    btn.textContent = `I want to check on ${guy.name}`;
+    btn.textContent = `อยากเช็กความสนิทกับ ${guy.name}`;
     btn.onclick = () => selectBotGuyChoice(guy.key, guy.name);
     container.appendChild(btn);
   });
@@ -1084,26 +1085,26 @@ function selectBotGuyChoice(guyKey, guyName) {
   const panel = $('bot-choices-panel');
   if (panel) panel.classList.add('hidden');
   progress.bot[currentDay] = { stage: 'done' };
-  pushEntry('bot', { kind: 'user', text: `I want to check on ${guyName}` });
+  pushEntry('bot', { kind: 'user', text: `อยากเช็กความสนิทกับ ${guyName}` });
 
   const score = characterHearts[guyKey] || 0;
   const person = contactsData[guyKey];
   const analysisTexts = {
     chenxu: score >= 1
-      ? '"Chen Xu is deeply impressed by your calm and understanding nature. He feels most comfortable talking to you in the group ✨"'
-      : '"Chen Xu views you as a polite participant, but hasn\'t fully opened up yet. Try finding moments for deeper conversations."',
+      ? '"Chen Xu ประทับใจในความนิ่งสงบและความเข้าใจผู้อื่นของคุณมาก เขารู้สึกสบายใจที่สุดเวลาคุยกับคุณในกลุ่ม ✨"'
+      : '"Chen Xu มองว่าคุณเป็นผู้เข้าร่วมที่สุภาพ แต่ยังไม่เปิดใจเต็มที่ ลองหาโอกาสคุยให้ลึกขึ้นดูนะคะ"',
     xiyao: score >= 2
-      ? '"Xiyao loves your bright energy! Every time you respond in group chat, he smiles without realizing it 😊"'
-      : '"Xiyao thinks you\'re a sweet sister/friend, but isn\'t sure if you\'re truly interested in him yet."',
+      ? '"Xiyao หลงรักพลังงานสดใสของคุณ! ทุกครั้งที่คุณตอบในกรุ๊ปแชต เขายิ้มโดยไม่รู้ตัวเลย 😊"'
+      : '"Xiyao มองว่าคุณเป็นพี่สาว/เพื่อนที่แสนหวาน แต่ยังไม่แน่ใจว่าคุณสนใจเขาจริงหรือเปล่า"',
     wenjun: score >= 2
-      ? '"Wen Jun senses a subtle magnetic chemistry between you two. He secretly looks out for your replies first 😉"'
-      : '"Wen Jun observes you with polite curiosity. He\'s waiting to discover more of your authentic thoughts."',
+      ? '"Wen Jun สัมผัสได้ถึงเคมีที่ดึงดูดกันอย่างแผ่วเบาระหว่างคุณสองคน เขาแอบรอดูข้อความตอบกลับของคุณก่อนใครเลย 😉"'
+      : '"Wen Jun สังเกตคุณด้วยความอยากรู้อย่างสุภาพ เขากำลังรอค้นพบความคิดที่แท้จริงของคุณเพิ่มเติม"',
     guyan: score >= 2
-      ? '"Gu Yan, who usually ignores everyone, actually saved your words to memory! He feels you truly understand his world."'
-      : '"Gu Yan is still keeping his tsundere defense up. He hasn\'t rejected your messages, just needs a little more time."'
+      ? '"Gu Yan ที่ปกติไม่สนใจใคร กลับจดจำคำพูดของคุณไว้! เขารู้สึกว่าคุณเข้าใจโลกของเขาจริงๆ"'
+      : '"Gu Yan ยังตั้งกำแพงแบบซึนเดเระอยู่ เขายังไม่ได้ปฏิเสธข้อความของคุณ แค่ต้องการเวลาอีกนิด"'
   };
 
-  pushEntry('bot', { kind: 'bot', text: `From my subtle observations... [Affinity Level for ${person.realName}: ❤️ ${score} Points]` }, 800);
+  pushEntry('bot', { kind: 'bot', text: `จากการสังเกตเบาๆ ของฉัน... [ระดับความสนิทกับ ${person.realName}: ❤️ ${score} แต้ม]` }, 800);
   pushEntry('bot', { kind: 'bot', text: analysisTexts[guyKey] }, 2000);
 }
 
@@ -1111,15 +1112,15 @@ function selectBotGuyChoice(guyKey, guyName) {
 // ROOM 4 : HEART SENDING - ต่อวัน
 // =====================================================================
 function openHeartSendingRoom() {
-  enterRoomUI('heart', '<Heart Sending>');
+  enterRoomUI('heart', '<ส่งหัวใจ>');
   const st = progress.heart[currentDay] || (progress.heart[currentDay] = { stage: 'new', target: null });
 
   if (st.stage === 'new') {
     removeDayEntries('heart', currentDay);
     rebuildRoom('heart');
-    pushEntry('heart', { kind: 'admin', text: `🌙 Welcome to Midnight Heart Signal, ${esc(playerProfile.name)}.` });
-    pushEntry('heart', { kind: 'admin', text: 'Another day has passed... Have you grown closer to anyone? Did anyone make you smile today?' }, 1000);
-    pushEntry('heart', { kind: 'admin', text: "It's time to send your heart signal tonight. Who would you like to send your heart to?" }, 2000);
+    pushEntry('heart', { kind: 'admin', text: `🌙 ยินดีต้อนรับสู่สัญญาณหัวใจเที่ยงคืน ${esc(playerProfile.name)}` });
+    pushEntry('heart', { kind: 'admin', text: 'อีกวันผ่านไปแล้ว... คุณสนิทกับใครมากขึ้นไหม? มีใครทำให้คุณยิ้มได้วันนี้หรือเปล่า?' }, 1000);
+    pushEntry('heart', { kind: 'admin', text: 'ถึงเวลาส่งสัญญาณหัวใจของคืนนี้แล้ว คุณอยากส่งหัวใจให้ใครคะ?' }, 2000);
     st.stage = 'choose';
     saveUserData();
     later(showHeartGuyChoices, 2000);
@@ -1143,12 +1144,12 @@ function showHeartGuyChoices() {
   const panel = $('heart-choices-panel');
   const container = $('heart-choices-container');
   if (!panel || !container) return;
-  setHeartPanelTitle('Select who to send your heart to:');
+  setHeartPanelTitle('เลือกคนที่จะส่งหัวใจให้:');
   container.innerHTML = '';
   guysList.forEach((guy) => {
     const btn = document.createElement('button');
     btn.className = 'w-full text-left p-2.5 bg-pink-50 hover:bg-pink-100/80 border border-pink-200/80 rounded-xl text-xs text-pink-950 transition active:scale-[0.99] font-medium shadow-xs';
-    btn.textContent = `Send heart to ${guy.name}`;
+    btn.textContent = `ส่งหัวใจให้ ${guy.name}`;
     btn.onclick = () => selectHeartGuyTarget(guy.key, guy.name);
     container.appendChild(btn);
   });
@@ -1167,8 +1168,8 @@ function selectHeartGuyTarget(guyKey, guyName) {
   const panel = $('heart-choices-panel');
   if (panel) panel.classList.add('hidden');
 
-  pushEntry('heart', { kind: 'user', text: `Sending my heart to ${guyName}` });
-  pushEntry('heart', { kind: 'admin', text: 'You can leave a short secret message along with your heart... What would you like to say to him?' }, 800);
+  pushEntry('heart', { kind: 'user', text: `ส่งหัวใจให้ ${guyName}` });
+  pushEntry('heart', { kind: 'admin', text: 'คุณฝากข้อความลับสั้นๆ ไปพร้อมกับหัวใจได้นะคะ... อยากบอกอะไรเขาคะ?' }, 800);
   later(showHeartInputPanel, 800);
 }
 
@@ -1187,8 +1188,8 @@ function submitHeartMessageFlow() {
   if (inputPanel) inputPanel.classList.add('hidden');
   pushEntry('heart', { kind: 'user', text: `"${msgText}"` });
 
-  setTxt('sweet-popup-title', 'Delivering your feelings...');
-  setTxt('sweet-popup-sub', 'Heart Signal delivered successfully ❤️');
+  setTxt('sweet-popup-title', 'กำลังส่งความรู้สึกของคุณ...');
+  setTxt('sweet-popup-sub', 'ส่งสัญญาณหัวใจสำเร็จแล้ว ❤️');
   const popup = $('sweet-popup');
   if (popup) popup.classList.remove('hidden');
 
@@ -1213,11 +1214,11 @@ function finishHeartSend() {
   if (characterHearts.guyan >= 2) qualified.push('guyan');
   const dayKey = pickSecretKey(currentDay);
 
-  pushEntry('heart', { kind: 'admin', text: 'Your heart and secret note have been delivered ✨' });
-  pushEntry('heart', { kind: 'admin', text: "The system has gathered anonymous heart messages from the guys... Let's see who sent you a heart tonight!" }, 1200);
+  pushEntry('heart', { kind: 'admin', text: 'หัวใจและข้อความลับของคุณส่งถึงแล้วค่ะ ✨' });
+  pushEntry('heart', { kind: 'admin', text: 'ระบบรวบรวมข้อความหัวใจนิรนามจากหนุ่มๆ มาแล้ว... มาดูกันว่าคืนนี้ใครส่งหัวใจมาให้คุณบ้าง!' }, 1200);
   let t = 2700;
   qualified.forEach((k) => {
-    const text = (guySecretMessages[k] && (guySecretMessages[k][dayKey] || guySecretMessages[k].day1)) || 'Thanks for the kind write-up';
+    const text = (guySecretMessages[k] && (guySecretMessages[k][dayKey] || guySecretMessages[k].day1)) || 'ขอบคุณสำหรับข้อความดีๆ ที่เขียนถึงกันนะ';
     pushEntry('heart', { kind: 'heartcard', text }, t);
     t += 600;
   });
@@ -1229,14 +1230,14 @@ function showNextDayButton() {
   const container = $('heart-choices-container');
   if (!panel || !container) return;
   const next = currentDay + 1;
-  setHeartPanelTitle(`Day ${currentDay} complete 🌙`);
+  setHeartPanelTitle(`จบวันที่ ${currentDay} แล้ว 🌙`);
   container.innerHTML = '';
   if (next > 30) {
-    container.innerHTML = '<p class="text-xs text-pink-900 text-center py-2">You finished all 30 days! 🎉</p>';
+    container.innerHTML = '<p class="text-xs text-pink-900 text-center py-2">คุณเล่นครบ 30 วันแล้ว! 🎉</p>';
   } else {
     const btn = document.createElement('button');
     btn.className = 'w-full bg-gradient-to-r from-fuchsia-400 to-pink-400 text-white font-bold py-2.5 rounded-xl text-xs shadow-md';
-    btn.textContent = `Continue to Day ${next} →`;
+    btn.textContent = `ไปต่อวันที่ ${next} →`;
     btn.onclick = goToNextDay;
     container.appendChild(btn);
   }
@@ -1259,7 +1260,7 @@ function goToNextDay() {
     const panel = $('heart-choices-panel'); if (panel) panel.classList.add('hidden');
     exitActiveChat();
     openGroupChat();
-  }, () => alert(`Day ${next} is not available yet (missing js/stories/day${next}.js).`));
+  }, () => alert(`ยังไม่มีเนื้อเรื่องวันที่ ${next} (ไม่พบ js/stories/day${next}.js)`));
 }
 
 // =====================================================================
@@ -1281,8 +1282,8 @@ function switchTab(tabKey) {
     targetBtn.classList.remove('text-purple-300');
   }
 
-  const titles = { chats: 'Chats', people: 'People', story: 'Story', my: 'MY', more: 'More' };
-  setTxt('header-page-title', titles[tabKey] || 'Chats');
+  const titles = { chats: 'แชต', people: 'ผู้คน', story: 'เรื่องราว', my: 'ของฉัน', more: 'เพิ่มเติม' };
+  setTxt('header-page-title', titles[tabKey] || 'แชต');
   if (tabKey === 'people') renderPeopleTab();
 }
 
@@ -1330,14 +1331,14 @@ function renderHistoryTab() {
     const item = document.createElement('div');
     item.className = `p-3 rounded-2xl border ${isCurrent ? 'bg-fuchsia-50 border-fuchsia-300' : 'bg-white border-purple-100'} flex justify-between items-center cursor-pointer hover:border-fuchsia-300 transition shadow-sm`;
     item.onclick = () => jumpToHistoryDay(d);
-    item.innerHTML = `<div><span class="text-xs font-bold text-purple-950">Day ${d}</span><p class="text-[10px] text-purple-400">Episode ${d}</p></div><span class="text-xs ${isCurrent ? 'text-fuchsia-600 font-bold' : 'text-purple-300'}">${isCurrent ? 'Restart day ⏱️' : 'Jump ⏱️'}</span>`;
+    item.innerHTML = `<div><span class="text-xs font-bold text-purple-950">วันที่ ${d}</span><p class="text-[10px] text-purple-400">ตอนที่ ${d}</p></div><span class="text-xs ${isCurrent ? 'text-fuchsia-600 font-bold' : 'text-purple-300'}">${isCurrent ? 'เริ่มวันนี้ใหม่ ⏱️' : 'ย้อนกลับ ⏱️'}</span>`;
     container.appendChild(item);
   }
 }
 
 // ย้อนไปเริ่มวันที่ N ใหม่: เก็บข้อความก่อนวัน N ไว้ ลบตั้งแต่วัน N เป็นต้นไป
 function jumpToHistoryDay(dayNum) {
-  const ok = confirm(`Restart from Day ${dayNum}?\n\nMessages before Day ${dayNum} are kept.\nMessages from Day ${dayNum} onward will be erased and replayed.`);
+  const ok = confirm(`เริ่มใหม่จากวันที่ ${dayNum} ไหม?\n\nข้อความก่อนวันที่ ${dayNum} จะถูกเก็บไว้\nข้อความตั้งแต่วันที่ ${dayNum} เป็นต้นไปจะถูกลบและเล่นใหม่`);
   if (!ok) return;
 
   runToken++;                // ยกเลิก timer เก่าทั้งหมด
@@ -1366,7 +1367,7 @@ function jumpToHistoryDay(dayNum) {
 }
 
 function restartGameNewLoop() {
-  if (!confirm('Restart the game from the very beginning?\nAll chat messages will be erased. Saved Ending Records will be kept.')) return;
+  if (!confirm('เริ่มเกมใหม่ตั้งแต่ต้นไหม?\nข้อความแชตทั้งหมดจะถูกลบ แต่บันทึกตอนจบที่เซฟไว้จะยังอยู่')) return;
   runToken++;
   masterRunning = false;
   groupRunning = false;
@@ -1381,7 +1382,7 @@ function restartGameNewLoop() {
 
   rebuildAllStreams();
   checkWeeklyBotTrigger(false);
-  alert('Game reset to Day 1!');
+  alert('รีเซ็ตเกมกลับไปวันที่ 1 แล้ว!');
   switchTab('chats');
 }
 
@@ -1392,33 +1393,33 @@ function renderEndingBookTab() {
   const container = $('ending-records-list');
   if (!container) return;
   if (endingBookRecords.length === 0) {
-    container.innerHTML = '<div class="p-4 bg-white rounded-2xl border border-purple-100 shadow-sm text-center py-8"><p class="text-xs text-purple-400">No saved ending records yet.</p><p class="text-[10px] text-purple-300 mt-1">Complete 30 days to save your story!</p></div>';
+    container.innerHTML = '<div class="p-4 bg-white rounded-2xl border border-purple-100 shadow-sm text-center py-8"><p class="text-xs text-purple-400">ยังไม่มีบันทึกตอนจบ</p><p class="text-[10px] text-purple-300 mt-1">เล่นให้ครบ 30 วันเพื่อบันทึกเรื่องราวของคุณ!</p></div>';
     return;
   }
   container.innerHTML = '';
   endingBookRecords.forEach((rec, idx) => {
     const item = document.createElement('div');
     item.className = 'p-3.5 bg-white rounded-2xl border border-purple-100 shadow-sm flex items-center justify-between';
-    item.innerHTML = `<div><h4 class="text-xs font-bold text-purple-950">${esc(rec.title)}</h4><p class="text-[10px] text-purple-400">Partner: ${esc(rec.partner)} · ${esc(rec.date)}</p></div><button onclick="viewEndingDetail(${idx})" class="text-xs bg-pink-100 text-fuchsia-600 px-3 py-1 rounded-xl font-bold hover:bg-pink-200">View</button>`;
+    item.innerHTML = `<div><h4 class="text-xs font-bold text-purple-950">${esc(rec.title)}</h4><p class="text-[10px] text-purple-400">คู่ของคุณ: ${esc(rec.partner)} · ${esc(rec.date)}</p></div><button onclick="viewEndingDetail(${idx})" class="text-xs bg-pink-100 text-fuchsia-600 px-3 py-1 rounded-xl font-bold hover:bg-pink-200">ดู</button>`;
     container.appendChild(item);
   });
 }
 
 function saveCurrentEndingRecord() {
   endingBookRecords.push({
-    title: `Season Loop #${endingBookRecords.length + 1} Ending`,
+    title: `ตอนจบลูปซีซัน #${endingBookRecords.length + 1}`,
     partner: 'Chen Xu',
-    date: new Date().toLocaleDateString(),
-    storySummary: 'After 30 days in Shanghai, you walked along the Bund with Chen Xu under the quiet night stars.'
+    date: new Date().toLocaleDateString('th-TH'),
+    storySummary: 'หลังผ่านไป 30 วันในเซี่ยงไฮ้ คุณเดินเล่นริมแม่น้ำเดอะบันด์กับ Chen Xu ใต้แสงดาวอันเงียบสงบของยามค่ำคืน'
   });
   saveUserData();
   renderEndingBookTab();
-  alert('Ending story saved to Ending Book!');
+  alert('บันทึกตอนจบลงสมุดตอนจบแล้ว!');
 }
 
 function viewEndingDetail(idx) {
   const rec = endingBookRecords[idx];
-  alert(`📖 [${rec.title}]\n\nPartner: ${rec.partner}\nDate: ${rec.date}\n\n"${rec.storySummary}"`);
+  alert(`📖 [${rec.title}]\n\nคู่ของคุณ: ${rec.partner}\nวันที่: ${rec.date}\n\n"${rec.storySummary}"`);
 }
 
 // =====================================================================
@@ -1428,11 +1429,11 @@ function renderPeopleTab() {
   const list = $('people-friends-list');
   if (!list) return;
   list.innerHTML = '';
-  setTxt('people-day-status', currentDay === 1 ? 'Day 1: Anonymous Code Names' : 'Day 2+: Profile Unlocked');
+  setTxt('people-day-status', currentDay === 1 ? 'วันที่ 1: ชื่อรหัสนิรนาม' : 'วันที่ 2 เป็นต้นไป: ปลดล็อกโปรไฟล์แล้ว');
 
   Object.entries(contactsData).forEach(([key, person]) => {
     const displayName = (currentDay === 1 && !person.isSpecial) ? person.codeName : person.realName;
-    const subTitle = (currentDay === 1 && !person.isSpecial) ? 'Anonymous Participant' : (person.codeName || person.occupation);
+    const subTitle = (currentDay === 1 && !person.isSpecial) ? 'ผู้เข้าร่วมนิรนาม' : (person.codeName || person.occupation);
 
     const item = document.createElement('div');
     item.className = 'p-3.5 px-4 flex items-center space-x-3.5 hover:bg-purple-50/50 transition cursor-pointer';
@@ -1448,7 +1449,7 @@ function renderPeopleTab() {
         <h4 class="text-xs font-bold text-purple-950 truncate">${displayName}</h4>
         <p class="text-[10px] text-purple-400 mt-0.5 truncate">${subTitle}</p>
       </div>
-      <span class="text-[10px] text-purple-300">View &gt;</span>`;
+      <span class="text-[10px] text-purple-300">ดู &gt;</span>`;
     list.appendChild(item);
   });
 }
@@ -1461,7 +1462,7 @@ function openContactProfileModal(key) {
   const displayName = (currentDay === 1 && !person.isSpecial) ? person.codeName : person.realName;
 
   setTxt('modal-profile-name', displayName);
-  setTxt('modal-profile-sub', `${person.codeName} · ${person.occupation || 'Participant'}`);
+  setTxt('modal-profile-sub', `${person.codeName} · ${person.occupation || 'ผู้เข้าร่วม'}`);
 
   if (avatarBox) {
     if (currentDay >= 2 && person.avatarUrl) {
@@ -1477,9 +1478,9 @@ function openContactProfileModal(key) {
   const details = $('modal-profile-details');
   if (details) {
     details.innerHTML = `
-      <div><strong class="text-purple-300">Occupation:</strong> ${person.occupation || 'N/A'}</div>
-      ${person.interests ? `<div><strong class="text-purple-300">Interests:</strong> ${person.interests}</div>` : ''}
-      ${person.idealType ? `<div><strong class="text-purple-300">Ideal Type:</strong> ${person.idealType}</div>` : ''}`;
+      <div><strong class="text-purple-300">อาชีพ:</strong> ${person.occupation || 'ไม่มีข้อมูล'}</div>
+      ${person.interests ? `<div><strong class="text-purple-300">ความสนใจ:</strong> ${person.interests}</div>` : ''}
+      ${person.idealType ? `<div><strong class="text-purple-300">สเปกในฝัน:</strong> ${person.idealType}</div>` : ''}`;
   }
   if (modal) modal.classList.remove('hidden');
 }
