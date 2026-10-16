@@ -42,8 +42,8 @@ function later(fn, ms) {
 const defaultHearts = () => ({ chenxu: 1, xiyao: 0, wenjun: 0, guyan: 0, yingyin: 0, jiangyue: 0, tangmei: 0 });
 const defaultProfile = () => ({
   name: 'Lin XinYue', avatarDataUrl: '', age: 23, occupation: 'วิศวกรระบบอัตโนมัติ',
-  interests: 'อ่านหนังสือ, เขียนหนังสือ, ฟังเพลง', idealType: 'คนดี, อบอุ่น, เป็นผู้ใหญ่',
-  datingStyle: 'ค่อยเป็นค่อยไป', bestQuality: 'เป็นมิตร'
+  interests: 'อ่านหนังสือ, เขียนหนังสือ, ฟังเพลง', idealType: 'อบอุ่น สูงหล่อหุ่นดี และดูเป็นผู้ใหญ่',
+  datingStyle: 'อยากให้เข้าใจกันและค่อยเป็นค่อยไป ตอนว่างพักผ่อนด้วยกัน', bestQuality: 'เป็นคนไม่ค่อยโกหก ตรงไปตรงมาและน่ารักล่ะมั้ง'
 });
 const emptyLogs = () => ({ master: [], group: [], bot: [], heart: [] });
 const defaultProgress = () => ({
@@ -64,13 +64,13 @@ let progress = defaultProgress();
 
 // หมายเหตุ: codeName ต้องตรงกับชื่อ sender ใน js/stories/dayN.js (คงเป็นภาษาอังกฤษไว้)
 const contactsData = {
-  chenxu: { codeName: 'Mr. Horizon', realName: 'Chen Xu', age: 29, occupation: 'หัวหน้าสถาปนิก', avatarUrl: 'images/chenxu.jpg', bgTone: 'bg-purple-200 text-purple-800' },
-  xiyao: { codeName: 'Golden Puppy', realName: 'Xia Xiyao', age: 22, occupation: 'ไอดอลนักร้องและนักเต้น', avatarUrl: 'images/xiyao.jpg', bgTone: 'bg-sky-200 text-sky-800' },
-  wenjun: { codeName: 'Velvet Noir', realName: 'Wen Jun', age: 28, occupation: 'เจ้าของหอศิลป์', avatarUrl: 'images/wenjun.jpg', bgTone: 'bg-indigo-950 text-purple-200' },
-  guyan: { codeName: 'Black Cat', realName: 'Gu Yan', age: 24, occupation: 'นักพัฒนาเกมอินดี้', avatarUrl: 'images/guyan.jpg', bgTone: 'bg-slate-700 text-slate-200' },
-  yingyin: { codeName: 'Scarlet', realName: 'Song Yingyin', age: 26, occupation: 'บรรณาธิการแฟชั่น', avatarUrl: 'images/yingyin.jpg', bgTone: 'bg-pink-200 text-pink-800' },
-  jiangyue: { codeName: 'Luna', realName: 'Jiang Yue', age: 25, occupation: 'นักเปียโนคลาสสิก', avatarUrl: 'images/jiangyue.jpg', bgTone: 'bg-fuchsia-200 text-fuchsia-800' },
-  tangmei: { codeName: 'Mochi (Foco)', realName: 'Tang Mei', age: 23, occupation: 'ฟู้ดวล็อกเกอร์', avatarUrl: 'images/tangmei.jpg', bgTone: 'bg-purple-200 text-purple-800' },
+  chenxu: { codeName: 'Mr. Horizon', realName: 'Chen Xu', age: 29, occupation: 'CEO (startup company)', avatarUrl: 'imag/chenxu.jpg', bgTone: 'bg-purple-200 text-purple-800' },
+  xiyao: { codeName: 'Golden Puppy', realName: 'Xia Xiyao', age: 22, occupation: 'Idol', avatarUrl: 'imag/xiyao.jpg', bgTone: 'bg-sky-200 text-sky-800' },
+  wenjun: { codeName: 'Velvet Noir', realName: 'Wen Jun', age: 28, occupation: 'art gallery owner', avatarUrl: 'imag/wenjun.jpg', bgTone: 'bg-indigo-950 text-purple-200' },
+  guyan: { codeName: 'Black Cat', realName: 'Gu Yan', age: 24, occupation: 'Developper', avatarUrl: 'imag/guyan.jpg', bgTone: 'bg-slate-700 text-slate-200' },
+  yingyin: { codeName: 'Scarlet', realName: 'Song Yingyin', age: 26, occupation: 'designer', avatarUrl: 'imag/yingyin.jpg', bgTone: 'bg-pink-200 text-pink-800' },
+  jiangyue: { codeName: 'Luna', realName: 'Jiang Yue', age: 25, occupation: 'pianist', avatarUrl: 'imag/jiangyue.jpg', bgTone: 'bg-fuchsia-200 text-fuchsia-800' },
+  tangmei: { codeName: 'Mochi (Foco)', realName: 'Tang Mei', age: 23, occupation: 'Streamer', avatarUrl: 'imag/tangmei.jpg', bgTone: 'bg-purple-200 text-purple-800' },
   master: { codeName: 'Producer', realName: 'Plan Master', occupation: 'ผู้อำนวยการบริหาร LUMEN', avatarUrl: '', bgTone: 'bg-pink-100 text-fuchsia-700', isSpecial: true },
   bot: { codeName: 'Love Counselor', realName: 'Love Counselor', occupation: 'ที่ปรึกษา LUMEN', avatarUrl: '', bgTone: 'bg-emerald-100 text-emerald-800', isSpecial: true },
   heartAdmin: { codeName: 'Midnight Heart', realName: 'Midnight Heart', occupation: 'ผู้จัดการสัญญาณหัวใจ', avatarUrl: '', bgTone: 'bg-pink-100 text-fuchsia-800', isSpecial: true }
@@ -78,32 +78,32 @@ const contactsData = {
 
 const guySecretMessages = {
   chenxu: {
-    day1: "ขอบคุณสำหรับข้อความดีๆ ที่เขียนถึงกันนะ",
-    day7: "หวังว่าคุณจะปรับตัวเข้ากับจังหวะชีวิตของเซี่ยงไฮ้ได้ดีนะ",
-    day14: "ผมเก็บแก้วกาแฟใบเล็กที่คุณเล่าถึงไว้แล้วนะ",
-    day21: "รอวันที่จะได้เดินเล่นริมแม่น้ำเดอะบันด์กับคุณอีกครั้ง",
+    day1: "ยินดีที่ได้รู้จัก หวังว่าเราจะสนิทกันมากขึ้น",
+    day7: "อากาศเริ่มเย็น ดูแลตัวเองด้วย",
+    day14: "เพลงที่คุณฟังเพราะดีนะ",
+    day21: "รอวันที่จะได้เดินเล่นริมแม่น้ำกับคุณอีกครั้ง",
     day28: "ตัวเลือกของผมคือคุณมาตลอดตั้งแต่วันแรก"
   },
   xiyao: {
-    day1: "ดีใจที่ได้รู้จักนะ! หวังว่าเราจะได้คุยกันอีกเยอะๆ ✨",
-    day7: "รอยยิ้มของคุณในกรุ๊ปแชตทำให้ทั้งวันของผมสดใสเลย!",
-    day14: "ไว้ไปกินชานมหวานๆ ด้วยกันสักวันนะ!",
-    day21: "ผมมีความสุขมากทุกครั้งที่คุณตอบกลับมา",
-    day28: "คุณคือส่วนที่หวานที่สุดของ 30 วันนี้"
+    day1: "ดีใจที่ได้รู้จักนะครับ หวังว่าเราจะได้คุยกันอีกเยอะๆ",
+    day7: "รอยยิ้มของคุณทำให้ทั้งวันของผมสดใสเลยล่ะ",
+    day14: "ไว้ไปกินชานมหวานๆ ด้วยกันสักวันนะ",
+    day21: "ไม่อยากให้ช่วงเวลานี้จบลงเลยล่ะ",
+    day28: "คุณคือคนที่ผมอยากรู้จักมากขึ้นและยิ่งรู้จักก็ยิ่งอยากรู้มากขึ้น"
   },
   wenjun: {
-    day1: "ค่ำคืนที่แสนอ่อนโยนในเซี่ยงไฮ้ ดีใจที่คุณมาร่วมกับเรา",
-    day7: "รสนิยมในการสนทนาของคุณน่าสนใจนะ เจ้าตัวเล็ก",
-    day14: "คืนนี้ผมเปิดแผ่นเสียงแจ๊ส แล้วนึกถึงคำพูดของคุณ",
-    day21: "หอศิลป์อบอุ่นขึ้นทุกครั้งที่คุณมาเยือน",
+    day1: "มารู้จักกันในมากขึ้นกันเถอะ",
+    day7: "รสนิยมในการสนทนาของคุณน่าสนใจนะ เด็กน้อย",
+    day14: "คืนนี้ผมเปิดเพลงที่คุณแนะนำ แล้วนึกถึงคำพูดของคุณ",
+    day21: "ครั้งหน้าจะพาคุณไปเที่ยวให้มากขึ้น",
     day28: "ขอบคุณที่ทำให้ซีซันนี้เป็นช่วงเวลาที่ไม่มีวันลืม"
   },
   guyan: {
-    day1: "...ขอบคุณที่ไม่เมินคำทักทายเงียบๆ ของฉัน",
-    day7: "ปกติฉันไม่ค่อยพิมพ์หรอก แต่ฉันอ่านทุกประโยคของเธอนะ",
-    day14: "เล่นด่านเกมเสร็จแล้ว เลยคิดว่าจะส่งหัวใจมาให้เธอ",
+    day1: "เด็กน้อย พูดมากจริง ๆ",
+    day7: "เธอนี่มันบื้อจริง ๆ",
+    day14: "โกหกไม่เก่งเลย",
     day21: "แมวดำของฉันดูเหมือนจะชอบรูปของเธอด้วยนะ",
-    day28: "เธอคือข้อยกเว้นเพียงหนึ่งเดียวในโค้ดของฉัน"
+    day28: "เธอคือข้อยกเว้นเพียงหนึ่งเดียวของฉัน"
   }
 };
 
@@ -111,7 +111,7 @@ const STREAM_ID = { master: 'master-stream', group: 'group-stream', bot: 'bot-st
 const PREVIEW_ID = { master: 'master-last-msg', group: 'group-last-msg', bot: 'bot-last-msg', heart: 'heart-last-msg' };
 const PREVIEW_DEFAULT = {
   master: 'ยินดีต้อนรับ! แตะเพื่อเริ่มตั้งค่า...',
-  group: 'แตะเพื่อเข้าร่วมเลานจ์กลุ่ม...',
+  group: 'แตะเพื่อเข้าร่วมกลุ่ม...',
   bot: 'สวัสดี! มาเช็กสถานะของคุณกัน...',
   heart: 'เปิดใช้งานแล้ว! แตะเพื่อส่งหัวใจเที่ยงคืน'
 };
@@ -282,7 +282,7 @@ function applyUnlockState() {
   if (grp) grp.classList.toggle('hidden', !progress.unlocked.group);
   const heart = $('channel-heart');
   if (heart) heart.classList.toggle('hidden', !progress.unlocked.heart);
-  if (progress.masterDone) setTxt('master-last-msg', 'ปลดล็อก TDL กลุ่มรวมแล้ว!');
+  if (progress.masterDone) setTxt('master-last-msg', 'ปลดล็อกกลุ่มรวมแล้ว');
 }
 
 function checkWeeklyBotTrigger(notify = false) {
@@ -587,10 +587,10 @@ const masterData = () => (window.day1Data && window.day1Data.masterDialogues) ||
 const regQuestions = [
   { key: 'name', label: 'ชื่อ / ชื่อเล่น:', placeholder: 'เช่น Lin XinYue' },
   { key: 'age', label: 'อายุ:', placeholder: 'เช่น 23' },
-  { key: 'occupation', label: 'อาชีพ:', placeholder: 'เช่น วิศวกรระบบอัตโนมัติ' },
+  { key: 'occupation', label: 'อาชีพ:', placeholder: 'เช่น Automation Engineer, Writer' },
   { key: 'interests', label: 'ความสนใจและงานอดิเรก:', placeholder: 'เช่น อ่านหนังสือ, เขียนหนังสือ' },
   { key: 'idealType', label: 'สเปกในฝัน:', placeholder: 'เช่น คนดี, เป็นผู้ใหญ่' },
-  { key: 'datingStyle', label: 'สไตล์การเดต:', placeholder: 'เช่น ค่อยเป็นค่อยไป' }
+  { key: 'datingStyle', label: 'สไตล์การเดต:', placeholder: 'เช่น ค่อยเป็นค่อยไป ไม่หวือหวา' }
 ];
 
 function saveMasterCheckpoint(sub) {
@@ -619,7 +619,7 @@ function openMasterChat() {
     masterRunning = true;
     ensureDayData(1, resumeMaster, () => {
       masterRunning = false;
-      showFatalInRoom('master-stream', 'โหลด js/stories/day1.js ไม่ได้ — ตรวจสอบพาธ/ชื่อไฟล์ และดู Console ของเบราว์เซอร์ (F12)');
+      showFatalInRoom('master-stream', 'โหลด js/stories/day1.js ไม่ได้ — ตรวจสอบชื่อไฟล์ และดู Console ของเบราว์เซอร์ (F12)');
     });
   }
 }
@@ -774,15 +774,15 @@ function showMasterCardConfirmation() {
 
   $('btn-confirm-card').onclick = () => {
     box.innerHTML = '';
-    pushEntry('master', { kind: 'user', text: 'ดูสมบูรณ์แบบเลยค่ะ!' });
+    pushEntry('master', { kind: 'user', text: 'เรียบร้อยแล้วค่ะ ข้อมูลน่าสนใจมากเลย' });
     nextMaster(0);
   };
 
   $('btn-edit-card').onclick = () => {
     box.innerHTML = '';
-    pushEntry('master', { kind: 'user', text: 'ฉันคิดว่าอยากแก้ข้อมูลใหม่' });
+    pushEntry('master', { kind: 'user', text: 'อยากแก้อะไรอีกนิดหน่อย' });
     later(() => {
-      pushEntry('master', { kind: 'master', text: 'ไม่มีปัญหาค่ะ! มาปรับข้อมูลของคุณทีละขั้นตอนกันนะคะ' });
+      pushEntry('master', { kind: 'master', text: 'ได้ค่ะ มาปรับข้อมูลของคุณทีละขั้นตอนกันนะคะ' });
       startMasterEditFlow(0);
     }, 600);
   };
@@ -793,7 +793,7 @@ function startMasterEditFlow(idx) {
 
   if (idx >= regQuestions.length) {
     clearMasterBox();
-    pushEntry('master', { kind: 'master', text: 'นี่คือการ์ดโปรไฟล์ที่อัปเดตแล้วของคุณค่ะ!' });
+    pushEntry('master', { kind: 'master', text: 'นี่คือการ์ดโปรไฟล์ที่อัปเดตแล้วของคุณค่ะ' });
     pushEntry('master', { kind: 'card', key: 'player', snap: profileSnap() });
     pushEntry('master', { kind: 'master', text: 'ตอนนี้เป็นยังไงบ้างคะ ดูสมบูรณ์แบบไหม?' }, 800);
     later(showMasterCardConfirmation, 800);
@@ -1056,7 +1056,7 @@ function openConsultantBotChat() {
   if (st.stage === 'new') {
     removeDayEntries('bot', currentDay);
     rebuildRoom('bot');
-    pushEntry('bot', { kind: 'bot', text: `สวัสดี ${esc(playerProfile.name)} 😊 ผ่านไปแล้ววันที่ ${currentDay}! ตอนนี้รู้สึกยังไงบ้างคะ?` });
+    pushEntry('bot', { kind: 'bot', text: `สวัสดีค่ะ ${esc(playerProfile.name)} 😊 ผ่านไปแล้ววันที่ ${currentDay}! ตอนนี้รู้สึกยังไงบ้างคะ?` });
     pushEntry('bot', { kind: 'bot', text: 'อยากรู้ไหมคะว่าใครในกลุ่มแอบประทับใจคุณอยู่? จะให้ฉันแอบเช็กความสนิทของใครให้ดีคะ?' }, 1000);
     st.stage = 'choose';
     saveUserData();
