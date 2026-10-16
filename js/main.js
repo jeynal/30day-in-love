@@ -1,11 +1,12 @@
 /* =====================================================================
-   LUMEN : 30 วันในเซี่ยงไฮ้  -  main.js  (v2: persistent chat)
+   LUMEN : 30 วันในเซี่ยงไฮ้  -  main.js  (v2: persistent chat + nested choices)
    ---------------------------------------------------------------------
    แนวคิดหลัก
    1) ทุกข้อความที่แสดงบนจอ ถูกบันทึกลง chatLogs[room] (แยกตามอีเมล)
    2) ทุกห้องมี "checkpoint" = ตำแหน่งบทสนทนา (pos) + ความยาว log (len)
       เมื่อโหลดใหม่ จะตัด log ให้เหลือแค่ถึง checkpoint แล้วเล่นต่อจากตำแหน่งนั้น
    3) ทุก entry ติดป้ายวัน (day) -> กระโดดกลับวันที่ N แล้วลบเฉพาะ day >= N ได้
+   4) รองรับการสร้างบทสนทนาซ้อนในตัวเลือก (Nested Options / Sub-choices & Follow-up messages)
    ===================================================================== */
 
 // ---------- Helpers ----------
@@ -210,7 +211,6 @@ window.addEventListener('DOMContentLoaded', () => {
     emailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitEmailLogin(); });
   }
   if (loginModal) {
-    // กดพื้นหลังเพื่อปิด (เฉพาะตอนล็อกอินอยู่แล้ว)
     loginModal.addEventListener('click', (e) => {
       if (e.target === loginModal && userEmail) loginModal.classList.add('hidden');
     });
@@ -220,7 +220,7 @@ window.addEventListener('DOMContentLoaded', () => {
     userEmail = savedEmail;
     loadUserData();
   } else if (loginModal) {
-    loginModal.classList.remove('hidden');   // เดิม modal ซ่อนตลอด -> ไม่เคยให้ใส่อีเมลครั้งแรก
+    loginModal.classList.remove('hidden');
   }
 });
 
@@ -238,10 +238,10 @@ function submitEmailLogin() {
     if (loginModal) loginModal.classList.add('hidden');
     return;
   }
-  saveUserData();                       // เซฟบัญชีเดิมก่อนสลับ
+  saveUserData();
   userEmail = input;
   try { localStorage.setItem('lumen_user_email', userEmail); } catch (e) { /* ignore */ }
-  loadUserData();                       // โหลดของบัญชีใหม่ (ล้างของเก่าก่อน)
+  loadUserData();
   if (loginModal) loginModal.classList.add('hidden');
   switchTab('chats');
 }
@@ -345,7 +345,6 @@ function previewText(e) {
   }
 }
 
-// บันทึกลง log ทันที (กันหายตอนรีเฟรช) แต่จะ "แสดง" ช้าลงได้ด้วย renderDelay
 function pushEntry(room, entry, renderDelay = 0) {
   entry.day = currentDay;
   chatLogs[room].push(entry);
@@ -510,7 +509,7 @@ function enterRoomUI(room, title) {
 }
 
 // =====================================================================
-// IMAGE HELPER (ย่อรูปก่อนเก็บ กัน localStorage เต็ม)
+// IMAGE HELPER
 // =====================================================================
 function resizeImage(dataUrl, maxSize, cb) {
   const img = new Image();
@@ -537,7 +536,7 @@ function readImageFile(file, cb) {
 // =====================================================================
 function profileSnap() {
   const s = clone(playerProfile);
-  delete s.avatarDataUrl;     // รูปอ่านจาก playerProfile ปัจจุบัน ไม่เก็บซ้ำในทุก log
+  delete s.avatarDataUrl;
   return s;
 }
 
@@ -580,7 +579,7 @@ function createPolaroidCardHTML(cardData, isPlayer = false, snap = null, day = c
 }
 
 // =====================================================================
-// ROOM 1 : MASTER  (checkpoint = pos + len + sub)
+// ROOM 1 : MASTER
 // =====================================================================
 const masterData = () => (window.day1Data && window.day1Data.masterDialogues) || [];
 
@@ -624,7 +623,6 @@ function openMasterChat() {
   }
 }
 
-// แสดงข้อผิดพลาดบนหน้าจอ (ไม่บันทึกลง log)
 function showFatalInRoom(streamId, text) {
   const s = $(streamId);
   if (!s) return;
@@ -811,7 +809,7 @@ function startMasterEditFlow(idx) {
 }
 
 // =====================================================================
-// ROOM 2 : GROUP  (checkpoint = day + pos + len + hearts)
+// ROOM 2 : GROUP
 // =====================================================================
 function ensureDayData(day, ok, fail) {
   if (window[`day${day}Data`]) { ok(); return; }
@@ -952,7 +950,7 @@ function showTypingIndicator(sender, cb) {
   }, Math.min(650, delays[speedMode]));
 }
 
-// ---- Choice bar ----
+// ---- Choice bar & Nested Options ----
 function renderPlayerChoices(choiceItem) {
   const panel = $('group-choices-panel');
   const container = $('choices-container');
@@ -1015,29 +1013,60 @@ function selectChoiceOption(opt) {
   const panel = $('group-choices-panel');
   if (panel) panel.classList.add('hidden');
 
+  // เพิ่ม/ลด แต้มใจ
   if (opt.hearts) {
     Object.entries(opt.hearts).forEach(([charKey, amount]) => {
       if (characterHearts[charKey] !== undefined) characterHearts[charKey] += amount;
     });
   }
-  pushEntry('group', { kind: 'user', text: opt.text });   // (pushEntry เซฟแต้มใจไปด้วย)
 
-  if (opt.replySender && opt.replyText) {
-    showTypingIndicator(opt.replySender, () => {
-      const base = (n) => String(n).split(' (')[0];
-      const guyKey = Object.keys(contactsData).find((k) => base(contactsData[k].codeName) === base(opt.replySender) || contactsData[k].realName === opt.replySender);
-      const tone = guyKey ? contactsData[guyKey].bgTone : 'bg-purple-200 text-purple-800';
-      pushEntry('group', { kind: 'msg', sender: opt.replySender, tone, text: opt.replyText });
-      triggerInAppNotification('TDL : กลุ่มรวม', `${opt.replySender}: ${opt.replyText}`, opt.replySender[0], 'group');
-      afterGroupItem();
-    });
+  // พิมพ์ข้อความของผู้เล่น
+  pushEntry('group', { kind: 'user', text: opt.text });
+
+  // จัดการคิวโต้ตอบเพิ่มเติม (รองรับ followUp อาร์เรย์ และ replySender/replyText รูปแบบเดิม)
+  let followQueue = [];
+  if (opt.followUp && Array.isArray(opt.followUp)) {
+    followQueue = clone(opt.followUp);
+  } else if (opt.replySender && opt.replyText) {
+    followQueue = [{ type: 'msg', sender: opt.replySender, text: opt.replyText }];
+  }
+
+  if (followQueue.length > 0) {
+    processFollowUpQueue(followQueue);
   } else {
     afterGroupItem();
   }
 }
 
+// ฟังก์ชันประมวลผลการโต้ตอบย่อย / Option ซ้อน
+function processFollowUpQueue(queue) {
+  if (!queue || queue.length === 0) {
+    afterGroupItem();
+    return;
+  }
+
+  const item = queue.shift();
+
+  if (item.type === 'msg') {
+    const base = (n) => String(n).split(' (')[0];
+    const guyKey = Object.keys(contactsData).find((k) => base(contactsData[k].codeName) === base(item.sender) || contactsData[k].realName === item.sender);
+    const tone = item.tone || (guyKey ? contactsData[guyKey].bgTone : 'bg-purple-200 text-purple-800');
+
+    showTypingIndicator(item.sender, () => {
+      pushEntry('group', { kind: 'msg', sender: item.sender, tone, text: item.text });
+      triggerInAppNotification('TDL : กลุ่มรวม', `${item.sender}: ${item.text}`, item.sender[0], 'group');
+      
+      later(() => processFollowUpQueue(queue), delays[speedMode] || 1000);
+    });
+  } else if (item.type === 'choices') {
+    renderPlayerChoices(item);
+  } else {
+    processFollowUpQueue(queue);
+  }
+}
+
 // =====================================================================
-// ROOM 3 : BOT (ที่ปรึกษาความรัก) - ต่อวัน
+// ROOM 3 : BOT (ที่ปรึกษาความรัก)
 // =====================================================================
 const guysList = [
   { key: 'chenxu', name: '1. Chen Xu (Mr. Horizon)' },
@@ -1109,7 +1138,7 @@ function selectBotGuyChoice(guyKey, guyName) {
 }
 
 // =====================================================================
-// ROOM 4 : HEART SENDING - ต่อวัน
+// ROOM 4 : HEART SENDING
 // =====================================================================
 function openHeartSendingRoom() {
   enterRoomUI('heart', '<ส่งหัวใจ>');
@@ -1336,12 +1365,11 @@ function renderHistoryTab() {
   }
 }
 
-// ย้อนไปเริ่มวันที่ N ใหม่: เก็บข้อความก่อนวัน N ไว้ ลบตั้งแต่วัน N เป็นต้นไป
 function jumpToHistoryDay(dayNum) {
   const ok = confirm(`เริ่มใหม่จากวันที่ ${dayNum} ไหม?\n\nข้อความก่อนวันที่ ${dayNum} จะถูกเก็บไว้\nข้อความตั้งแต่วันที่ ${dayNum} เป็นต้นไปจะถูกลบและเล่นใหม่`);
   if (!ok) return;
 
-  runToken++;                // ยกเลิก timer เก่าทั้งหมด
+  runToken++;
   groupRunning = false;
   waitingForTap = false;
 
