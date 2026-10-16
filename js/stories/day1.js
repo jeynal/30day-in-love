@@ -1,85 +1,84 @@
 window.day1Data = {
   day: 1,
-  title: "Shanghai First Night",
-  
+  title: "คืนแรกในเซี่ยงไฮ้",
+
   // 1. บทสนทนาในห้อง Master (ต้อนรับ ถามความรู้สึก ยืนยันโปรไฟล์ สรุปการ์ด และบอกกฎ)
   masterDialogues: [
-    { type: 'sys', text: 'The chat room is opening now' },
-    { type: 'master_msg', text: 'Congratulations and welcome, Participant #8! 🎉 We are thrilled to have you here in our dating program ✨ Lumen season 1✨.' },
-    { type: 'master_msg', text: 'How are you feeling right now? Excited or nervous about spending the next 30 days with us?' },
-    { type: 'player_turn', prompt: 'Tell Producer how you feel...' },
+    { type: 'sys', text: 'ห้องแชตกำลังเปิดแล้ว' },
+    { type: 'master_msg', text: 'ขอแสดงความยินดีและยินดีต้อนรับค่ะ ผู้เข้าร่วมหมายเลข 8! 🎉 เราดีใจมากที่ได้ต้อนรับคุณเข้าสู่โปรแกรมเดตของเรา ✨ LUMEN ซีซัน 1 ✨' },
+    { type: 'master_msg', text: 'ตอนนี้คุณรู้สึกยังไงบ้างคะ ตื่นเต้นหรือประหม่าที่จะได้ใช้เวลา 30 วันต่อจากนี้กับพวกเรา?' },
+    { type: 'player_turn', prompt: 'บอกความรู้สึกของคุณกับโปรดิวเซอร์...' },
 
-    { type: 'master_msg', text: 'Haha, that reaction is totally understandable! Everyone is holding their breath right now.' },
-    { type: 'master_msg', text: 'Before we unlock the main lounge, let\'s quickly confirm your Official Profile Card.' },
-    { type: 'master_msg', text: 'Please upload your profile photo first.' },
+    { type: 'master_msg', text: 'ฮ่าๆ ความรู้สึกแบบนั้นเข้าใจได้เลยค่ะ! ตอนนี้ทุกคนต่างกลั้นหายใจรออยู่เหมือนกัน' },
+    { type: 'master_msg', text: 'ก่อนจะปลดล็อกเลานจ์หลัก มายืนยันการ์ดโปรไฟล์ทางการของคุณกันก่อนนะคะ' },
+    { type: 'master_msg', text: 'ช่วยอัปโหลดรูปโปรไฟล์ของคุณก่อนเลยค่ะ' },
     { type: 'player_avatar_upload' },
 
-    { type: 'master_msg', text: 'Great photo! Now please answer a few quick questions to complete your card.' },
+    { type: 'master_msg', text: 'รูปสวยมากค่ะ! ต่อไปช่วยตอบคำถามสั้นๆ ไม่กี่ข้อเพื่อทำการ์ดให้สมบูรณ์นะคะ' },
     { type: 'player_reg_flow' },
 
-    { type: 'master_msg', text: 'All details recorded! Here is your official Polaroid Profile Card preview:' },
+    { type: 'master_msg', text: 'บันทึกข้อมูลครบแล้วค่ะ! นี่คือตัวอย่างการ์ดโปรไฟล์โพลารอยด์ทางการของคุณ:' },
     { type: 'card', key: 'player' },
 
-    { type: 'master_msg', text: 'Does everything look perfect to you?' },
+    { type: 'master_msg', text: 'ทุกอย่างดูเรียบร้อยดีไหมคะ?' },
     { type: 'master_confirm_card' }, // ระบบวนลูปตรวจ/แก้ไขการ์ด
 
-
-    { type: 'master_msg', text: 'Awesome! Now, please keep these key rules in mind:' },
-    { type: 'master_msg', text: '📌 [RULES OF DAY 1]\n1. All participants must use anonymous Code Names.\n2. Do NOT reveal your real name or exact age on Day 1.\n3. Tomorrow (Day 2), everyone\'s true profiles & photos will be officially unveiled!' },
-    { type: 'master_msg', text: '🔔 The TDL All Group lounge is now OPEN! Tap below to join.' },
+    { type: 'master_msg', text: 'เยี่ยมเลยค่ะ! ต่อไป ขอให้จำกฎสำคัญเหล่านี้ไว้นะคะ:' },
+    { type: 'master_msg', text: '📌 [กฎของวันที่ 1]\n1. ผู้เข้าร่วมทุกคนต้องใช้ชื่อรหัส (Code Name) แบบนิรนาม\n2. ห้ามเปิดเผยชื่อจริงหรืออายุจริงในวันที่ 1\n3. พรุ่งนี้ (วันที่ 2) โปรไฟล์และรูปภาพจริงของทุกคนจะถูกเปิดเผยอย่างเป็นทางการ!' },
+    { type: 'master_msg', text: '🔔 เลานจ์ TDL กลุ่มรวม เปิดแล้ว! แตะด้านล่างเพื่อเข้าร่วมได้เลยค่ะ' },
     { type: 'master_event', eventName: 'OPEN_GROUP_CHANNEL' }
   ],
 
-  // 2. บทสนทนาในห้อง TDL All Group (รองรับระบบ Picka Choice Bar)
+  // 2. บทสนทนาในห้อง TDL กลุ่มรวม (รองรับระบบ Picka Choice Bar)
   dialogues: [
-    { type: 'sys', text: '📢 TDL : All Group Lounge Activated (8 Participants Online)' },
-    { type: 'msg', sender: 'Golden Puppy', tone: 'bg-sky-200 text-sky-800', text: 'Hey everyone!! Finally the room opened 🎉 Welcome to Shanghai!' },
-    { type: 'msg', sender: 'Mochi', tone: 'bg-purple-200 text-purple-800', text: 'hiiii everyone!! OMG so many people here 😮 So nervous!' },
-    { type: 'msg', sender: 'Scarlet', tone: 'bg-pink-200 text-pink-800', text: 'Hello all. Nice to meet everyone on this first night.' },
-    { type: 'msg', sender: 'Black Cat', tone: 'bg-slate-700 text-slate-200', text: '...so many notification dings already. It’s kinda loud.' },
-    { type: 'msg', sender: 'Mr. Horizon', tone: 'bg-purple-200 text-purple-800', text: 'Good evening everyone. Hope nobody had a rough flight arriving in Shanghai.' },
-    { type: 'msg', sender: 'Velvet Noir', tone: 'bg-indigo-950 text-purple-200', text: 'Evening. The night breeze in the city is quite gentle today.' },
-    { type: 'msg', sender: 'Luna', tone: 'bg-fuchsia-200 text-fuchsia-800', text: 'Hello! Producer said we must keep our real identity hidden today. Super mysterious!' },
+    { type: 'sys', text: '📢 เปิดใช้งานเลานจ์ TDL : กลุ่มรวม แล้ว (ออนไลน์ 8 คน)' },
+    { type: 'msg', sender: 'Golden Puppy', tone: 'bg-sky-200 text-sky-800', text: 'ทุกคนนน!! ในที่สุดห้องก็เปิดแล้ว 🎉 ยินดีต้อนรับสู่เซี่ยงไฮ้!' },
+    { type: 'msg', sender: 'Mochi', tone: 'bg-purple-200 text-purple-800', text: 'หวัดดีทุกคนนน!! โอ้โห คนเยอะจัง 😮 ตื่นเต้นมากเลย!' },
+    { type: 'msg', sender: 'Scarlet', tone: 'bg-pink-200 text-pink-800', text: 'สวัสดีทุกคนค่ะ ยินดีที่ได้รู้จักทุกคนในคืนแรกนี้นะคะ' },
+    { type: 'msg', sender: 'Black Cat', tone: 'bg-slate-700 text-slate-200', text: '...แจ้งเตือนเด้งรัวขนาดนี้ เสียงดังไปหน่อย' },
+    { type: 'msg', sender: 'Mr. Horizon', tone: 'bg-purple-200 text-purple-800', text: 'สวัสดีตอนเย็นทุกคน หวังว่าไม่มีใครเจอเที่ยวบินแย่ๆ ตอนมาถึงเซี่ยงไฮ้นะ' },
+    { type: 'msg', sender: 'Velvet Noir', tone: 'bg-indigo-950 text-purple-200', text: 'สวัสดีตอนเย็น ลมยามค่ำคืนของเมืองวันนี้อ่อนโยนดีนะ' },
+    { type: 'msg', sender: 'Luna', tone: 'bg-fuchsia-200 text-fuchsia-800', text: 'สวัสดีค่ะ! โปรดิวเซอร์บอกว่าวันนี้เราต้องปกปิดตัวตนจริงไว้ ลึกลับสุดๆ เลย!' },
 
     // จุดเลือกทักทายครั้งแรก (คำตอบจะไปขึ้นในช่องพิมพ์ด้านล่างพร้อมให้กดส่ง)
     {
       type: 'choices',
       options: [
         {
-          text: 'Just walked in',
+          text: 'เพิ่งเดินเข้ามาค่ะ',
           hearts: { chenxu: 1 },
           replySender: 'Golden Puppy',
-          replyText: 'Haha yay! Participant #8 is here! Love your vibe already!'
+          replyText: 'ฮ่าๆ เย้! ผู้เข้าร่วมหมายเลข 8 มาแล้ว! ชอบ vibe ของเธอตั้งแต่แรกเลย!'
         },
         {
-          text: 'Nice to meet everyone! Excited for this night ✨',
+          text: 'ยินดีที่ได้รู้จักทุกคนค่ะ! ตื่นเต้นกับคืนนี้มากเลย ✨',
           hearts: { xiyao: 1 },
           replySender: 'Mochi',
-          replyText: 'Yayyy! Welcome welcome! Glad you made it safely!'
+          replyText: 'เย้ยยย! ยินดีต้อนรับๆ ดีใจที่มาถึงโดยสวัสดิภาพนะ!'
         }
       ]
     },
 
-    { type: 'msg', sender: 'Mr. Horizon', tone: 'bg-purple-200 text-purple-800', text: 'Yes, remember the Producer rules for Day 1: we are all using Code Names today.' },
-    { type: 'msg', sender: 'Mr. Horizon', tone: 'bg-purple-200 text-purple-800', text: 'Tomorrow on Day 2, there will be an official identity guessing event where our real profiles will be revealed!' },
-    { type: 'msg', sender: 'Mochi', tone: 'bg-purple-200 text-purple-800', text: 'Ooooh I can\'t wait for Day 2!! I want to guess who is behind these nicknames so badly!' },
-    { type: 'msg', sender: 'Velvet Noir', tone: 'bg-indigo-950 text-purple-200', text: 'Patience makes the reveal sweeter, doesn\'t it?' },
-    { type: 'msg', sender: 'Black Cat', tone: 'bg-slate-700 text-slate-200', text: '...Don\'t expect too much.' },
+    { type: 'msg', sender: 'Mr. Horizon', tone: 'bg-purple-200 text-purple-800', text: 'ใช่ อย่าลืมกฎของโปรดิวเซอร์สำหรับวันที่ 1 นะ วันนี้เราทุกคนใช้ชื่อรหัสกัน' },
+    { type: 'msg', sender: 'Mr. Horizon', tone: 'bg-purple-200 text-purple-800', text: 'พรุ่งนี้ วันที่ 2 จะมีกิจกรรมทายตัวตนอย่างเป็นทางการ และโปรไฟล์จริงของเราจะถูกเปิดเผย!' },
+    { type: 'msg', sender: 'Mochi', tone: 'bg-purple-200 text-purple-800', text: 'โอ้ยยย รอวันที่ 2 ไม่ไหวแล้ว!! อยากเดาจังว่าใครอยู่หลังชื่อเล่นพวกนี้!' },
+    { type: 'msg', sender: 'Velvet Noir', tone: 'bg-indigo-950 text-purple-200', text: 'ความอดทนทำให้การเปิดเผยหวานขึ้นไม่ใช่เหรอ?' },
+    { type: 'msg', sender: 'Black Cat', tone: 'bg-slate-700 text-slate-200', text: '...อย่าคาดหวังมากนักล่ะ' },
 
-    // จุดเลือกตอบก่อนปิดห้อง (Single Fixed Choice)
+    // จุดเลือกตอบก่อนปิดห้อง (ตัวเลือกเดียวแบบตายตัว)
     {
       type: 'choices',
       options: [
         {
-          text: 'I can\'t wait to see everyone\'s real profile tomorrow too!',
+          text: 'ฉันก็รอดูโปรไฟล์จริงของทุกคนพรุ่งนี้ไม่ไหวเหมือนกัน!',
           hearts: { wenjun: 1, guyan: 1 },
           replySender: 'Velvet Noir',
-          replyText: 'Have a sweet dream then. See you all tomorrow under the Shanghai sun.'
+          replyText: 'งั้นฝันหวานนะ แล้วพบกันใหม่พรุ่งนี้ใต้แสงตะวันเซี่ยงไฮ้'
         }
       ]
     },
 
-    { type: 'sys', text: '🔒 23:55 PM: TDL All Group lounge has officially closed for Day 1.' },
+    { type: 'sys', text: '🔒 23:55 น.: เลานจ์ TDL กลุ่มรวม ปิดอย่างเป็นทางการสำหรับวันที่ 1' },
     { type: 'master_event', eventName: 'TRIGGER_HEART_SIGNAL' }
   ]
 };
